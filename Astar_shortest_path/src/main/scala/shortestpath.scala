@@ -115,7 +115,7 @@ object shortestpath extends App {
   //val ans = msssp.vertices.map(vertex => "Target Vertex " + vertex._1 + ": distance is " + vertex._2(0) + ", previous node is Vertex " + vertex._2(2) + " second shortest distance is " + " - " + vertex._2(1) + " , " + vertex._2.length)
   //ans.collect().foreach(println)
 
-  println(" ----------------- Printing the final answer --------------  ")
+  println(" ----------------- Printing the final answer -------------- -- ")
   val ans2 = msssp.vertices.map(vertex => "Shortest distances from Source Vertex " + sourceId + " to target landmark vertex: " + vertex._1 + " are  " + vertex._2(0) + " | " + vertex._2(1))
   ans2.collect().foreach(println)
 
