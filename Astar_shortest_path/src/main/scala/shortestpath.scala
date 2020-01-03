@@ -54,7 +54,7 @@ object shortestpath extends App {
     if (id == sourceId) Array(0.0,0.0, id, id)
     else Array(Double.PositiveInfinity,Double.PositiveInfinity, id, id)).
     mapEdges( e => 1 )
-
+//
   gx.cache()
   gx.vertices.take(10)
   gx.edges.take(10)
