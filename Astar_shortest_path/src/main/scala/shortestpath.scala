@@ -13,11 +13,43 @@ import org.apache.spark.rdd.RDD
 object shortestpath extends App {
   val spark = SparkSession.builder.master("local[2]").appName("load_graph_data").config("spark.executor.memory", "3g").getOrCreate;
 
+  spark.sparkContext.setLogLevel("ERROR")
   import spark.implicits._
 
   val graph = GraphLoader.edgeListFile(spark.sparkContext, "file:////Users/surajshashidhar/Desktop/web-Google.txt")
   val sourceId: VertexId = 0L
 
+  val cg = new createGraph(spark);
+
+  val og = cg.createGraphFromFile();
+
+  val gg = og.toGraphX;
+  val m = gg.triplets.map(row => row.srcId +  " | " + row.srcAttr.toString()  + " | " + row.attr.toString() +  " | " + row.dstId);
+  println(" --------  graph triplets ------------n  ")
+
+  m.take(10).foreach(println)
+
+  val ap = new Astar_sp(spark)
+  val res = ap.calculate_astar_sp(gg, 91769840, 1928366671)
+  res.take(10).foreach(println)
+
+  val res1 = ap.calculate_astar_sp(gg,176616871L, 2657395883L)
+  res1.take(10).foreach(println)
+
+  val res2 = ap.calculate_astar_sp(gg, 29353963L, 51518449L)
+  res2.take(10).foreach(println)
+
+  val res3 = ap.calculate_astar_sp(gg, 11986228L, 122596365L)
+  res3.take(10).foreach(println)
+
+  val res4 = ap.calculate_astar_sp(gg, 31195854L, 151814859L)
+  res4.take(10).foreach(println)
+
+  //val x = cg.uat()
+  //x.map(row => (row(0).asInstanceOf[Long] ,row(1).asInstanceOf[Long])).map(row => ap.calculate_astar_sp(gg, row._1, row._2)).map(row => row(0).toString + "|" + row(1).toString + "|" + row(2) + "|" + row(3)).collect().foreach(println)
+
+//row(0) + "|" + row(1) + "|" + row(2) + "|" + row(3) + "|" + row(4)
+  /*
   val gx = graph.mapVertices( (id, _) =>
     if (id == sourceId) Array(0.0,0.0, id, id)
     else Array(Double.PositiveInfinity,Double.PositiveInfinity, id, id)).
@@ -32,6 +64,7 @@ object shortestpath extends App {
   println( " ----------  end of the 1st module and start of shortest path program ----------- ");
   //Array(Double.PositiveInfinity, -1) -- initial message
   //message is of the type [Infinity, -1]
+
   val msssp = gx.pregel(Array(Double.PositiveInfinity,  Double.PositiveInfinity, -1, -1))(
     (id, dist, newDist) =>
     {
@@ -118,6 +151,6 @@ object shortestpath extends App {
   println(" ----------------- Printing the final answer -------------- -- ")
   val ans2 = msssp.vertices.map(vertex => "Shortest distances from Source Vertex " + sourceId + " to target landmark vertex: " + vertex._1 + " are  " + vertex._2(0) + " | " + vertex._2(1))
   ans2.collect().foreach(println)
-
+   */
 
 }
