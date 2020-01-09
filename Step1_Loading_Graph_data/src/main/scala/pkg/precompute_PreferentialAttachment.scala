@@ -1,25 +1,27 @@
-import org.apache.spark._
-import org.apache.spark.graphx._;
-import org.apache.spark.sql._
-import org.apache.spark.sql.functions._
-import org.graphframes._
-import org.apache.spark.sql.types._
-import org.apache.spark.graphx.util.GraphGenerators
-import java.math.BigDecimal
-import java.text.DecimalFormat
+package pkg
 
+import java.math.BigDecimal
+import org.apache.spark.graphx._
+import org.apache.spark.sql._
+import org.graphframes._
 
 class precompute_PreferentialAttachment (spark: SparkSession) {
 
   def preferentialAttachment(graph: GraphFrame, const: constantsFile) : Unit =
   {
 
+    var year1 = const.year1; var year2 = const.year2; var year3 = const.year3;
+  println("------ " + year1 + " : " + year2 + " : " + year3 + " ------------")
+
+
     val graph_year1 = graph.filterEdges(const.year1_filter);
-    val graph_year2= graph.filterEdges(const.year2_filter);
+    val graph_year2 = graph.filterEdges(const.year2_filter);
     val graph_year3 = graph.filterEdges(const.year3_filter);
     val gx_year1 = graph_year1.toGraphX;
-    val gx_year2= graph_year2.toGraphX;
-    val gx_year3 = graph_year3.toGraphX
+    val gx_year2 = graph_year2.toGraphX;
+    val gx_year3 = graph_year3.toGraphX;
+
+    gx_year1.persist(); gx_year2.persist(); gx_year3.persist()
 
     val neighbours_year1 = gx_year1.collectNeighborIds(EdgeDirection.Either);
     val neighbours_year2 = gx_year2.collectNeighborIds(EdgeDirection.Either);
@@ -38,9 +40,9 @@ class precompute_PreferentialAttachment (spark: SparkSession) {
     println("     --------------------------     ")
     //pref_attachment_1991.sortBy(line => line._1,false).take(20).foreach(println);
 
-    pref_attachment_year1.sortBy(line => line._1,false).map(line => new BigDecimal(line._1).toPlainString() + "|" + line._2 + "|" + line._3 + "|" + "1989").saveAsTextFile(const.dstFolderPath + const.prefattachFileName + const.year1);
-    pref_attachment_year2.sortBy(line => line._1,false).map(line => new BigDecimal(line._1).toPlainString() + "|" + line._2 + "|" + line._3 + "|" + "1990").saveAsTextFile(const.dstFolderPath + const.prefattachFileName + const.year2);
-    pref_attachment_year3.sortBy(line => line._1,false).map(line => new BigDecimal(line._1).toPlainString() + "|" + line._2 + "|" + line._3 + "|" + "1991").saveAsTextFile(const.dstFolderPath + const.prefattachFileName + const.year3);
+    pref_attachment_year1.map(line => new BigDecimal(line._1).toPlainString() + "|" + line._2 + "|" + line._3 + "|" + year1).saveAsTextFile(const.dstFolderPath + const.prefattachFileName + const.year1);
+    pref_attachment_year2.map(line => new BigDecimal(line._1).toPlainString() + "|" + line._2 + "|" + line._3 + "|" + year2).saveAsTextFile(const.dstFolderPath + const.prefattachFileName + const.year2);
+    pref_attachment_year3.map(line => new BigDecimal(line._1).toPlainString() + "|" + line._2 + "|" + line._3 + "|" + year3).saveAsTextFile(const.dstFolderPath + const.prefattachFileName + const.year3);
 
 
   }
