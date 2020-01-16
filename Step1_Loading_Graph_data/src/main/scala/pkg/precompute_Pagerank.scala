@@ -20,7 +20,7 @@ class precompute_Pagerank(spark: SparkSession) {
 
       val pagerank_year1 = results_graphx_year1.staticPageRank(const.pagerank_iteration,const.pagerank_probability)
       pagerank_year1.persist();
-      pagerank_year1.vertices.map(row => row._1.asInstanceOf[Long] + "," + row._2).saveAsTextFile(const.dstFolderPath+const.pagerankFileName+const.year1);
+      pagerank_year1.vertices.map(row => row._1.asInstanceOf[Long] + "," + row._2).saveAsTextFile(const.dstFolderPath+const.pagerankFileName+"training");
 
 
       println("The time at end of pagerank1 is: " + System.currentTimeMillis)
@@ -33,7 +33,7 @@ class precompute_Pagerank(spark: SparkSession) {
 
       val pagerank_year2 = results_graphx_year2.staticPageRank(const.pagerank_iteration,const.pagerank_probability)
       pagerank_year2.persist();
-      pagerank_year2.vertices.map(row => row._1.asInstanceOf[Long] + "," + row._2).saveAsTextFile(const.dstFolderPath+const.pagerankFileName+const.year2);
+      pagerank_year2.vertices.map(row => row._1.asInstanceOf[Long] + "," + row._2).saveAsTextFile(const.dstFolderPath+const.pagerankFileName+"testing");
 
       println("The time at end of pagerank2 is: " + System.currentTimeMillis)
 

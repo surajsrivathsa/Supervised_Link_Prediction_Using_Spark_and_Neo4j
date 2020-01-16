@@ -16,33 +16,33 @@ class precompute_PreferentialAttachment (spark: SparkSession) {
 
     val graph_year1 = graph.filterEdges(const.year1_filter);
     val graph_year2 = graph.filterEdges(const.year2_filter);
-    val graph_year3 = graph.filterEdges(const.year3_filter);
+    //val graph_year3 = graph.filterEdges(const.year3_filter);
     val gx_year1 = graph_year1.toGraphX;
     val gx_year2 = graph_year2.toGraphX;
-    val gx_year3 = graph_year3.toGraphX;
+    //val gx_year3 = graph_year3.toGraphX;
 
-    gx_year1.persist(); gx_year2.persist(); gx_year3.persist()
+    gx_year1.persist(); gx_year2.persist(); //gx_year3.persist()
 
     val neighbours_year1 = gx_year1.collectNeighborIds(EdgeDirection.Either);
     val neighbours_year2 = gx_year2.collectNeighborIds(EdgeDirection.Either);
-    val neighbours_year3 = gx_year3.collectNeighborIds(EdgeDirection.Either);
+    //val neighbours_year3 = gx_year3.collectNeighborIds(EdgeDirection.Either);
     val totalEdges_year1 = gx_year1.edges.count();
     val totalEdges_year2 = gx_year2.edges.count();
-    val totalEdges_year3 = gx_year3.edges.count();
+    //val totalEdges_year3 = gx_year3.edges.count();
 
-    println("   -----------------------  "+ "the count of edges for the three years are: " + totalEdges_year1 + " ---- " + totalEdges_year2 + " ---- "+ totalEdges_year3 + " ---- ");
+    println("   -----------------------  "+ "the count of edges for the three years are: " + totalEdges_year1 + " ---- " + totalEdges_year2 + " ---- "+ -1 + " ---- ");
     var pref_attachment_year1 = neighbours_year1.map(line => (line._2.length.toDouble/(2.0*totalEdges_year1),line._2.length,line._1));
     var pref_attachment_year2 = neighbours_year2.map(line => (line._2.length.toDouble/(2.0*totalEdges_year2),line._2.length,line._1));
-    var pref_attachment_year3 = neighbours_year3.map(line => (line._2.length.toDouble/(2.0*totalEdges_year3),line._2.length,line._1));
+    //var pref_attachment_year3 = neighbours_year3.map(line => (line._2.length.toDouble/(2.0*totalEdges_year3),line._2.length,line._1));
     //pref_attachment_1989.sortBy(line => line._1,false).take(20).foreach(println);
     println("     --------------------------     ")
     //pref_attachment_1990.sortBy(line => line._1,false).take(20).foreach(println);
     println("     --------------------------     ")
     //pref_attachment_1991.sortBy(line => line._1,false).take(20).foreach(println);
 
-    pref_attachment_year1.map(line => new BigDecimal(line._1).toPlainString() + "|" + line._2 + "|" + line._3 + "|" + year1).saveAsTextFile(const.dstFolderPath + const.prefattachFileName + const.year1);
-    pref_attachment_year2.map(line => new BigDecimal(line._1).toPlainString() + "|" + line._2 + "|" + line._3 + "|" + year2).saveAsTextFile(const.dstFolderPath + const.prefattachFileName + const.year2);
-    pref_attachment_year3.map(line => new BigDecimal(line._1).toPlainString() + "|" + line._2 + "|" + line._3 + "|" + year3).saveAsTextFile(const.dstFolderPath + const.prefattachFileName + const.year3);
+    pref_attachment_year1.map(line => new BigDecimal(line._1).toPlainString() + "|" + line._2 + "|" + line._3 + "|" + year1).saveAsTextFile(const.dstFolderPath + const.prefattachFileName + "training");
+    pref_attachment_year2.map(line => new BigDecimal(line._1).toPlainString() + "|" + line._2 + "|" + line._3 + "|" + year2).saveAsTextFile(const.dstFolderPath + const.prefattachFileName + "testing");
+    //pref_attachment_year3.map(line => new BigDecimal(line._1).toPlainString() + "|" + line._2 + "|" + line._3 + "|" + year3).saveAsTextFile(const.dstFolderPath + const.prefattachFileName + const.year3);
 
 
   }

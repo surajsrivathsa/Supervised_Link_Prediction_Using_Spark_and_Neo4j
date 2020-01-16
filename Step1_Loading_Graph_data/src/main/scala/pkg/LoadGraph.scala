@@ -1,14 +1,14 @@
 package pkg
 
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions.desc
+import org.apache.spark.sql.functions.{col, desc, udf}
 import org.graphframes.GraphFrame
 
 object LoadGraph {
    def main(args: Array[String]): Unit =
   {
     val const = new constantsFile();
-    val spark = SparkSession.builder.master(const.master).appName(const.appName).config("spark.executor.memory", const.executor_memory).config("spark.driver.memory", const.driver_memory).getOrCreate();
+    val spark = SparkSession.builder.master(const.master).appName(const.appName).getOrCreate();
 
     //Setting loglevel to warning as we don't need info
     //.config("spark.executor.memory", const.executor_memory).config("spark.driver.memory", const.driver_memory)
@@ -75,27 +75,114 @@ object LoadGraph {
 
     val s2le = new Step2_Linkexistence(spark);
     //s2le.generateLinkExistsSamples(graph,const);
-    //s2le.generateSamples(graph, const);
 
+    //val allSamples = s2le.generateSamples(graph, const);
+    //val trainingSamples = allSamples(0);
+    //val testingSamples = allSamples(1);
+
+    val allSamples = s2le.generateSamplesFromFile( const);
+    val trainingSamples = allSamples(0);
+    val testingSamples = allSamples(1);
+
+
+    val allGraphs = s2le.generateSubGraphs(graph, const);
+    val trainingGraph = allGraphs(0);
+    val testingGraph = allGraphs(1);
+
+
+    //trainingSamples.show(10);
+    //testingSamples.show(10);
+
+    //println("Count of training and testiing samples are: " + trainingSamples.count() + " , " + testingSamples.count())
     val t8 = System.currentTimeMillis
     println(" ---------  It took " + ((t8-t7)) + " milliseconds for step2 sample creation -----------")
 
     val t9 = System.currentTimeMillis
 
     val cn = new postcompute_CommonNeighbours(spark);
-    //cn.generateCommonNeighbours(graph,const)
+    //cn.generateCommonNeighbours3(trainingGraph, testingGraph,const);
+    //cn.generateCommonNeighbours(trainingGraph, testingGraph, trainingSamples, testingSamples, const);
+    //cn.generateCommonNeighbours(trainingGraph, testingGraph, trainingSamples, testingSamples, const);
     val t10 = System.currentTimeMillis
     println(" ---------  It took " + ((t10-t9)) + " milliseconds for common neighbours function to complete -----------")
 
-
     val t11 = System.currentTimeMillis
+    println("Starting shortest paths function at: " + t11);
+    val psp = new postcompute_Shortestpaths(spark);
+    //psp.calc_shortestpaths(const, trainingGraph, testingGraph, trainingSamples, testingSamples)
+
+    /*
+
+    def mySp(): Unit = {
+      println("Hello world")
+      val myGraph = graph.filterEdges(const.year1_filter)
+
+      val first_training_sp = udf((x: Long, y: Long) => {
+        val paths = trainingGraph.bfs.fromExpr(s"id = $x").toExpr(s"id = $y").maxPathLength(7).run()
+        if(!paths.head(2).isEmpty)
+        {
+          var sp = paths.columns.size/2
+          print(s"path found for $x and $y is $sp")
+          sp
+        }
+        else {
+          0
+        }
+      }
+      )
+      spark.udf.register("first_training_sp", first_training_sp);
+
+      val examples = trainingSamples.limit(100)
+      examples.persist()
+      examples.count()
+
+      var trainingResult = examples.withColumn("first_shortestpath", first_training_sp(col("authorId1"),col("authorId2")))
+
+      trainingResult.write.option("sep", "|").mode("overwrite").csv(const.dstFolderPath+const.shortestpathsFileName + "training")
+      return
+    }
+
+    //mySp()
+    val first_training_sp = udf((x: Long, y: Long) => {
+      val paths = trainingGraph.bfs.fromExpr(s"id = $x").toExpr(s"id = $y").maxPathLength(7).run()
+      if(!paths.head(2).isEmpty)
+      {
+        var sp = paths.columns.size/2
+        print(s"path found for $x and $y is $sp")
+        sp
+      }
+      else {
+        0
+      }
+    }
+    )
+    spark.udf.register("first_training_sp", first_training_sp);
+
+    val examples = trainingSamples.limit(10)
+    examples.persist()
+    examples.count()
+
+    var trainingResult = examples.withColumn("first_shortestpath", first_training_sp(col("authorId1"),col("authorId2")))
+
+    trainingResult.write.option("sep", "|").mode("overwrite").csv(const.dstFolderPath+const.shortestpathsFileName + "training")
+
+     */
+
+
+    val t12 = System.currentTimeMillis
+    println(" ---------  It took " + ((t12-t11)) + " milliseconds for shortest paths function to complete -----------")
+
+
+    val t13 = System.currentTimeMillis
+
+
     val af = new assembleFeatures(spark);
     //af.assembleTrainingfeatures(const);
     //af.assembleValidationFeatures(const)
-    val t12 = System.currentTimeMillis
-    println(" ---------  It took " + ((t12-t11)) + " to assemble features -----------")
+    val t14 = System.currentTimeMillis
+    println(" ---------  It took " + ((t14-t13)) + " to assemble features -----------")
 
-    //val step3start = new pkg.assembleFeatures(spark);
+    val step3start = new pkg.assembleFeatures(spark);
     //step3start.featureAssembling;
 
     //val mll = new machinelearning(spark);

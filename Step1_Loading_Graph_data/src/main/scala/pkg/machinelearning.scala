@@ -11,24 +11,36 @@ import org.apache.spark.sql.types.{StructField, _}
 class machinelearning(spark: SparkSession) {
 
   def ml: Unit = {
-    val mlschema = StructType(Array(StructField("authorId1", LongType, nullable = false), StructField("authorId2", LongType, nullable = false)  ,StructField("year", IntegerType, nullable = true) , StructField("label", StringType, nullable = false),StructField("pagerankscore1", DoubleType, nullable = false), StructField("pagerankscore2", DoubleType, nullable = false), StructField("preferential_attachment_score1", DoubleType, nullable = false), StructField("preferential_attachment_score2", DoubleType, nullable = false)))
+    val mlschema = StructType(Array(StructField("authorId1", LongType, nullable = false), StructField("authorId2", LongType, nullable = false)  ,StructField("year", IntegerType, nullable = true) , StructField("label", IntegerType, nullable = false),StructField("pagerankscore1", DoubleType, nullable = false), StructField("pagerankscore2", DoubleType, nullable = false), StructField("preferential_attachment_score1", DoubleType, nullable = false), StructField("preferential_attachment_score2", DoubleType, nullable = false)))
 
-
-    var mldf = spark.read.schema(mlschema).format("csv").option("header", "false").option("mode", "DROPMALFORMED").option("inferSchema", "false").load("/Users/surajshashidhar/Desktop/graphml_10lkh/featureset4/featureset4.csv");
+    //train
+    var mldf = spark.read.schema(mlschema).format("csv").option("sep","|").option("header", "true").option("mode", "DROPMALFORMED").option("inferSchema", "false").load("/Users/surajshashidhar/Desktop/graphml_10lkh/training_features.csv");
     mldf.show(10);
 
     mldf.createOrReplaceTempView("table")
-    var inputdata = spark.sql("select authorId1, authorId2,  common_neighbours,pagerankscore1,pagerankscore2,preferential_attachment_score1 ,preferential_attachment_score2, cast((CASE WHEN label = 'Yes' THEN 1 ELSE 0 END) as double) as label from table");
+    var inputdata = spark.sql("select distinct authorId1, authorId2, pagerankscore1,pagerankscore2,preferential_attachment_score1 ,preferential_attachment_score2, label from table");
     inputdata.show(10);
 
-    val assembler = new VectorAssembler().setInputCols(Array("common_neighbours", "pagerankscore1", "pagerankscore2", "preferential_attachment_score1", "preferential_attachment_score2")).setOutputCol("features")
+    val assembler = new VectorAssembler().setInputCols(Array("pagerankscore1", "pagerankscore2", "preferential_attachment_score1", "preferential_attachment_score2")).setOutputCol("features")
     var data_2 = assembler.transform(inputdata)
 
     val Array(training, test) = data_2.randomSplit(Array(0.7, 0.3), seed = 1234L);
-    val model = new NaiveBayes().fit(training);
+    val model = new NaiveBayes().fit(data_2);
+
+    //test
+    var mldf1 = spark.read.schema(mlschema).format("csv").option("sep","|").option("header", "true").option("mode", "DROPMALFORMED").option("inferSchema", "false").load("/Users/surajshashidhar/Desktop/graphml_10lkh/validation_features.csv");
+    mldf1.show(10);
+
+    mldf1.createOrReplaceTempView("table1")
+    var inputdata1 = spark.sql("select distinct authorId1, authorId2, pagerankscore1,pagerankscore2,preferential_attachment_score1 ,preferential_attachment_score2, label from table1");
+    inputdata1.show(10);
+
+    val assembler1 = new VectorAssembler().setInputCols(Array("pagerankscore1", "pagerankscore2", "preferential_attachment_score1", "preferential_attachment_score2")).setOutputCol("features")
+    var data_3 = assembler1.transform(inputdata1)
+
 
     // Select example rows to display.
-    val predictions = model.transform(test)
+    val predictions = model.transform(data_3)
     predictions.show()
 
     predictions.createOrReplaceTempView("predictions");
@@ -67,10 +79,10 @@ class machinelearning(spark: SparkSession) {
     val pipeline = new Pipeline().setStages(Array(labelIndexer, featureIndexer, rf, labelConverter))
 
     // Train model. This also runs the indexers.
-    val modelrf = pipeline.fit(trainingData)
+    val modelrf = pipeline.fit(data_2)
 
     // Make predictions.
-    val predictionsrf = modelrf.transform(testData)
+    val predictionsrf = modelrf.transform(data_3)
 
     // Select example rows to display.
     predictionsrf.select("predictedLabel", "label", "features").show(5)
