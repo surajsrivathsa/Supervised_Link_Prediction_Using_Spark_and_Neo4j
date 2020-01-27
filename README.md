@@ -1,4 +1,3 @@
-# Graph_processing
 # Large Scale Supervised Link prediction with Spark Graph libraries and Spark MLlib
 
 # Aims
@@ -50,6 +49,12 @@
 3) Path based algorithms from GraphX didn't scale well for us as edges increases. We couldn't apply Shortest paths or BFS for large number of samples on graph due to scaling issues. However this works fine for smaller samples.
 
 Credits(Connected components Big star and small star algorithm) : Sirish Kumar: https://www.linkedin.com/pulse/connected-component-using-map-reduce-apache-spark-shirish-kumar/
+
+# Results
+
+1) Our Graph data was extremely skewed with very few huge connected components and large number of components with really less connections. This followed a power law distribution. 
+2) We observed that preferential attachment performed much better with page rank coming in second. Shortest path itself did not add much value, but boosted accuracy/F1 measure a bit when combined with Shortest Path. But cost of calculating paths for huge graphs is more, hence it could be ignored in case of our type of scenario.
+3) We observed that the link prediction performance goes up if we include more edges and vertices in our graph data and also if there is no class imbalance.
 
 
 
