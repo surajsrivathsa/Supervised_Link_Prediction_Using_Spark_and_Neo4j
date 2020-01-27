@@ -64,5 +64,8 @@ Credits(Connected components Big star and small star algorithm) : Sirish Kumar: 
 2) We observed that preferential attachment performed much better with page rank coming in second. Shortest path itself did not add much value, but boosted accuracy/F1 measure a bit when combined with Shortest Path. But cost of calculating paths for huge graphs is more, hence it could be ignored in case of our type of scenario.
 3) We observed that the link prediction performance goes up if we include more edges and vertices in our graph data and also if there is no class imbalance.
 
+# Paper
+Link to be updated
+
 
 
