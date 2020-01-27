@@ -44,7 +44,7 @@
 
 9) Assemble all the above graph topological features in single file(assemble_features)
 
-10) Supervised Link prediction using different algorithms on all combinations of features (TBA)
+10) Supervised Link prediction using different algorithms on all combinations of features (supervised_link_prediction)
 
 # Challenges Faced
 
