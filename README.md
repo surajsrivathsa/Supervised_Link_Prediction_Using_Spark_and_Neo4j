@@ -1,5 +1,13 @@
 # Large Scale Supervised Link prediction with Spark Graph libraries and Spark MLlib
 
+# Contributors
+1) Avinash Ranjan Singh
+2) Khamar Zama
+3) Madhu Sirivella
+4) Pramod Bontha
+5) Sanjeeth Busnur
+6) Suraj Shashidhar
+
 # Aims
 
 1) To evaluate how the system performs link prediction on spark graph libraries and Spark MLLib
