@@ -1,7 +1,7 @@
 # Graph_processing
 # Large Scale Supervised Link prediction with Spark Graph libraries and Spark MLlib
 
-Aims
+# Aims
 
 1) To evaluate how the system performs link prediction on spark graph libraries and Spark MLLib
 2) Comparison of frameworks.(Neo4j and GraphX).
