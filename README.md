@@ -45,9 +45,11 @@
 
 - Due to this we had to sample the 2016 graph and apply connected components on them. Later we choose only the number of components which we could work on in our cluster.
 
-2) Connected components from Spark did not work, hence we need to use an algorithm called Big star / Small star algorithm(See Bottom for more details)
+2) Connected components from Spark did not work for us, hence we need to use an algorithm called Big star / Small star algorithm (See Bottom for more details)
 
-3) Path based algorithms from GraphX doesn't scale well as edges increases. We couldn't apply Shortest paths or BFS for large number of samples on graph due to scaling issues. However this works fine for smaller samples.
+3) Path based algorithms from GraphX didn't scale well for us as edges increases. We couldn't apply Shortest paths or BFS for large number of samples on graph due to scaling issues. However this works fine for smaller samples.
+
+Credits(Connected components Big star and small star algorithm) : Sirish Kumar: https://www.linkedin.com/pulse/connected-component-using-map-reduce-apache-spark-shirish-kumar/
 
 
 
