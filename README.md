@@ -25,7 +25,7 @@
 
 # Project Flow
 
-1) Preprocess RDF files to structured file. Our edges are directed and are directed from Paper to author. We don't have a direct undirected edge from author to author. Hence reduced the Paper to author edge to undirected edge between author and author so that its easy for computation. Store this in snappy compressed parquet.
+1) Preprocess RDF files to structured file. Our edges are directed and are directed from Paper to author. We don't have a direct undirected edge from author to author. Hence reduce the Paper to author edge to undirected edge between author and author so that its easy for computation. Store this in snappy compressed parquet.
 
 2) Sample the complete graph using Connected components and write the components to a file.
 - Pick required number of components that we could analyze on cluster. (generate_subgraphs_using_connectedcomponents_app)
@@ -44,7 +44,7 @@
 
 9) Assemble all the above graph topological features in single file(assemble_features)
 
-10) Supervised Link prediction using different algorithms on all combinations of features
+10) Supervised Link prediction using different algorithms on all combinations of features (TBA)
 
 # Challenges Faced
 
