@@ -67,5 +67,9 @@ Credits(Connected components Big star and small star algorithm) : Sirish Kumar: 
 # Paper
 Link to be updated
 
+# Data Description
+
+https://docs.microsoft.com/en-us/academic-services/graph/reference-data-schema
+
 
 
