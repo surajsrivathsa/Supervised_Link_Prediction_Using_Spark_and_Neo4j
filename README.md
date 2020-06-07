@@ -71,7 +71,13 @@ Credits(Connected components Big star and small star algorithm) : Sirish Kumar: 
 
 
 # Project Report
-Link to be updated
+Graph_ML_Techincal_Report.pdf. --> updated in github repo
+
+# Project Presentation slides
+
+https://docs.google.com/presentation/d/1Dqt2DUMNdi5HUj3yzbSgTxGzUeB4z_AAtIBsthxgP-k/edit?usp=sharing
+
+https://docs.google.com/presentation/d/1KR0E8gnkixLbtSzxZ5TIiIn4nUsXGKkvr-IF-PWkv7c/edit?usp=sharing
 
 # Data Description
 
